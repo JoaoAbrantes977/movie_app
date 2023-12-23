@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:movie_app/auth.dart';
-
+import 'package:movie_app/main_page.dart';
 
 
 class HomePage extends StatelessWidget{
@@ -35,7 +35,7 @@ class HomePage extends StatelessWidget{
         height: double.infinity,
         width: double.infinity,
         padding: const EdgeInsets.all(20),
-        child: Column(
+        child:  Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[

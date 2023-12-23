@@ -25,4 +25,3 @@ class _WidgetTreeState extends State<WidgetTree> {
     );
   }
 }
-
