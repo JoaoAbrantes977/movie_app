@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:movie_app/main.dart';
 import 'package:movie_app/login.dart';
 
 class HomePage extends StatelessWidget {
@@ -10,8 +9,20 @@ class HomePage extends StatelessWidget {
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
-          title: Text("A minha app"),
+          title: const Text("A minha app"),
           backgroundColor: Colors.amber,
+        ),
+        body: Center(
+          child: SizedBox(
+            child: ElevatedButton(
+              onPressed: (){
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (context) => LoginForm()),
+                );
+              }, child: const Text("Voltar"),
+            ),
+          ),
         ),
       ),
     );

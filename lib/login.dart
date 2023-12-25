@@ -3,12 +3,11 @@ import 'package:movie_app/home_page.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
-
-
 class LoginForm extends StatelessWidget {
-
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passController = TextEditingController();
+
+  LoginForm({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -17,40 +16,54 @@ class LoginForm extends StatelessWidget {
         title: const Text('Login Form'),
       ),
       body: Padding(
-        padding: EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             TextField(
               controller: emailController,
-              decoration: InputDecoration(labelText: 'Email'),
+              decoration: const InputDecoration(labelText: 'Email'),
               keyboardType: TextInputType.emailAddress,
             ),
-            SizedBox(height: 16.0),
+            const SizedBox(height: 16.0),
             TextField(
               controller: passController,
-              decoration: InputDecoration(labelText: 'Password'),
+              decoration: const InputDecoration(labelText: 'Password'),
               obscureText: true,
             ),
-            SizedBox(height: 32.0),
+            const SizedBox(height: 32.0),
             ElevatedButton(
               onPressed: () {
                 // Logica do login
                 String email = emailController.text;
                 String password = passController.text;
                 verifyUser(email, password, context);
-                print('Login Button Pressed\nEmail: $email\nPassword: $password');
-                print("Registado com sucesso");
+                print(
+                    'Login Button Pressed\nEmail: $email\nPassword: $password');
+                print("Login efetuado com sucesso");
               },
               child: const Text('Login'),
             ),
-            SizedBox(height: 16.0),
+            const SizedBox(height: 16.0),
             ElevatedButton(
               onPressed: () {
-                // Implement register logic here
+                // register logic
                 String email = emailController.text;
                 String password = passController.text;
-                createUser(email, password, context);
+
+                if (email.isNotEmpty && password.isNotEmpty) {
+                  createUser(email, password, context);
+                  print(
+                      'Login Button Pressed\nEmail: $email\nPassword: $password');
+                  print("Login efetuado com sucesso");
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text("User and Password cannot be empty"),
+                      backgroundColor: Colors.red,
+                    ),
+                  );
+                }
                 print('Register Button Pressed\nEmail: $email\nPassword: $password');
               },
               child: const Text('Register'),
@@ -62,10 +75,9 @@ class LoginForm extends StatelessWidget {
   }
 }
 
-
-// CREATE USER
+// CREATE USER //
 Future<void> createUser(String email, String password, context) async {
-  final response = await http.post(
+  final responseRegister = await http.post(
     Uri.parse('http://10.0.2.2:3000/register'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
@@ -76,16 +88,21 @@ Future<void> createUser(String email, String password, context) async {
     }),
   );
 
-  if (response.statusCode == 200) {
+  if (responseRegister.statusCode == 200) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text("User Signed In Succefully"),
+        backgroundColor: Colors.green,
+      ),
+    );
     // User created successfully, navigate to HomePage
     Navigator.pushReplacement(
       context,
-      MaterialPageRoute(builder: (context) => HomePage()),
+      MaterialPageRoute(builder: (context) => LoginForm()),
     );
-
-  } else if (response.statusCode == 400) {
+  } else if (responseRegister.statusCode == 400) {
     // Email already exists, show a SnackBar
-    final Map<String, dynamic> errorData = jsonDecode(response.body);
+    final Map<String, dynamic> errorData = jsonDecode(responseRegister.body);
     final String errorMessage = errorData['error'];
 
     ScaffoldMessenger.of(context).showSnackBar(
@@ -97,7 +114,7 @@ Future<void> createUser(String email, String password, context) async {
   } else {
     // Unexpected error, show a generic SnackBar
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
+      const SnackBar(
         content: Text('Unexpected error occurred'),
         backgroundColor: Colors.red,
       ),
@@ -105,9 +122,43 @@ Future<void> createUser(String email, String password, context) async {
   }
 }
 
-// VERIFY USER
+// VERIFY USER //
+Future<void> verifyUser(String email, String password, context) async {
+  final responseLogin = await http.post(
+    Uri.parse('http://10.0.2.2:3000/login'),
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+    },
+    body: jsonEncode(<String, String>{
+      'name': email,
+      'pass': password,
+    }),
+  );
 
-Future<void> verifyUser(String email, String password, context) async{
+  if (responseLogin.statusCode == 200) {
+    // User logged in successfully, navigate to HomePage
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => const HomePage()),
+    );
+  } else if (responseLogin.statusCode == 400) {
+    // Email or password are not correct
+    final Map<String, dynamic> errorData = jsonDecode(responseLogin.body);
+    final String errorMessage = errorData['error'];
 
-  // esta vai ser um get
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(errorMessage),
+        backgroundColor: Colors.red,
+      ),
+    );
+  } else {
+    // Unexpected error, show a generic SnackBar
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Unexpected error occurred'),
+        backgroundColor: Colors.red,
+      ),
+    );
+  }
 }
