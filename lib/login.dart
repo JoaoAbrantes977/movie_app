@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:movie_app/home_page.dart';
+import 'package:movie_app/home_screen.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
@@ -139,7 +139,7 @@ Future<void> verifyUser(String email, String password, context) async {
     // User logged in successfully, navigate to HomePage
     Navigator.pushReplacement(
       context,
-      MaterialPageRoute(builder: (context) => const HomePage()),
+      MaterialPageRoute(builder: (context) =>  HomeScreen()),
     );
   } else if (responseLogin.statusCode == 400) {
     // Email or password are not correct
