@@ -1,9 +1,32 @@
 import 'package:flutter/material.dart';
 import 'package:movie_app/description_screen.dart';
 import 'package:movie_app/login.dart';
+import 'package:carousel_slider/carousel_slider.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
-class HomeScreen extends StatelessWidget {
-  const HomeScreen({super.key});
+class HomeScreen extends StatefulWidget {
+  const HomeScreen({Key? key}) : super(key: key);
+
+  @override
+  _HomeScreenState createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  final String apiKey = "9c2f0ada85abce310958785de988c4fb";
+
+  Future<List<Map<String, dynamic>>> fetchMovies(String endpoint) async {
+    final response = await http.get(
+      Uri.parse('https://api.themoviedb.org/3/movie/$endpoint?api_key=$apiKey'),
+    );
+
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> data = json.decode(response.body);
+      return List<Map<String, dynamic>>.from(data['results']);
+    } else {
+      throw Exception('Failed to load movies');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -55,7 +78,7 @@ class HomeScreen extends StatelessWidget {
             ListTile(
               leading: const Icon(Icons.info),
               title: const Text('App Version'),
-              subtitle: Text("1.0.0"),
+              subtitle: const Text("1.0.0"),
               onTap: () {
                 // Handle app version option
               },
@@ -89,26 +112,178 @@ class HomeScreen extends StatelessWidget {
           ),
         ],
         onTap: (index) {
-          if(index == 0){
+          if (index == 0) {
             Navigator.pushReplacement(
               context,
-              MaterialPageRoute(builder: (context) => DescriptionScreen()),
+              MaterialPageRoute(builder: (context) => LoginForm()),
             );
-          } else if (index == 1){
+          } else if (index == 1) {
             Navigator.pushReplacement(
               context,
-              MaterialPageRoute(builder: (context) => DescriptionScreen()),
+              MaterialPageRoute(builder: (context) => LoginForm()),
             );
-          }
-          else{
+          } else {
             Navigator.pushReplacement(
               context,
-              MaterialPageRoute(builder: (context) => DescriptionScreen()),
+              MaterialPageRoute(builder: (context) => LoginForm()),
             );
-
           }
         },
       ),
+        body: FutureBuilder<List<Map<String, dynamic>>>(
+          future: fetchMovies('popular'),
+          builder: (context, popularMoviesSnapshot) {
+            if (popularMoviesSnapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator());
+            } else if (popularMoviesSnapshot.hasError) {
+              return Center(child: Text('Error: ${popularMoviesSnapshot.error}'));
+            } else {
+              final List<Map<String, dynamic>> popularMovies = popularMoviesSnapshot.data!;
+
+              return FutureBuilder<List<Map<String, dynamic>>>(
+                future: fetchMovies('top_rated'),
+                builder: (context, topRatedMoviesSnapshot) {
+                  if (topRatedMoviesSnapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(child: CircularProgressIndicator());
+                  } else if (topRatedMoviesSnapshot.hasError) {
+                    return Center(child: Text('Error: ${topRatedMoviesSnapshot.error}'));
+                  } else {
+                    final List<Map<String, dynamic>> topRatedMovies = topRatedMoviesSnapshot.data!;
+
+                    return FutureBuilder<List<Map<String, dynamic>>>(
+                      future: fetchMovies('upcoming'),
+                      builder: (context, upcomingMoviesSnapshot) {
+                        if (upcomingMoviesSnapshot.connectionState == ConnectionState.waiting) {
+                          return const Center(child: CircularProgressIndicator());
+                        } else if (upcomingMoviesSnapshot.hasError) {
+                          return Center(child: Text('Error: ${upcomingMoviesSnapshot.error}'));
+                        } else {
+                          final List<Map<String, dynamic>> upcomingMovies = upcomingMoviesSnapshot.data!;
+
+                          return Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.all(18.0),
+                                child: Column(
+                                  children: [
+                                    const Text("Trending Movies"),
+                                    const SizedBox(height: 10,),
+                                    CarouselSlider(
+                                      items: popularMovies.map((movie) {
+                                        return Image.network(
+                                          'https://image.tmdb.org/t/p/w500${movie['poster_path']}',
+                                          fit: BoxFit.cover,
+                                        );
+                                      }).toList(),
+                                      options: CarouselOptions(
+                                        height: 200.0,
+                                        enlargeCenterPage: true,
+                                        autoPlay: true,
+                                        aspectRatio: 16 / 9,
+                                        autoPlayCurve: Curves.fastOutSlowIn,
+                                        enableInfiniteScroll: true,
+                                        autoPlayAnimationDuration: const Duration(milliseconds: 800),
+                                        viewportFraction: 0.8,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              const SizedBox(height: 20),
+
+                              // Vertical ListView for Top Rated Movies
+                              Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: 18.0),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const Text('Top Rated Movies'),
+                                    SizedBox(
+                                      height: 150,
+                                      child: ListView.builder(
+                                        scrollDirection: Axis.horizontal,
+                                        itemCount: topRatedMovies.length,
+                                        itemBuilder: (context, index) {
+                                          final movie = topRatedMovies[index];
+                                           //print(topRatedMovies[0]);
+                                          final movieId = movie['id'];
+
+                                          return GestureDetector(
+                                            onTap: () {
+                                              Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                  builder: (context) => DescriptionScreen(movieId: movieId),
+                                                ),
+                                              );
+                                            },
+                                            child: Padding(
+                                              padding: const EdgeInsets.all(8.0),
+                                              child: Image.network(
+                                                'https://image.tmdb.org/t/p/w500${movie['poster_path']}',
+                                                fit: BoxFit.cover,
+                                              ),
+                                            ),
+                                          );
+                                        },
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              const SizedBox(height: 20),
+
+                              // Vertical ListView for Upcoming Movies
+                              Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: 18.0),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const Text('Upcoming Movies'),
+                                    SizedBox(
+                                      height: 149,
+                                      child: ListView.builder(
+                                        scrollDirection: Axis.horizontal,
+                                        itemCount: upcomingMovies.length,
+                                        itemBuilder: (context, index) {
+                                          final movie = upcomingMovies[index];
+                                          final movieId = movie['id'];
+
+                                          return GestureDetector(
+                                            onTap: () {
+                                              Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                  builder: (context) => DescriptionScreen(movieId: movieId),
+                                                ),
+                                              );
+                                            },
+                                            child: Padding(
+                                              padding: const EdgeInsets.all(8.0),
+                                              child: Image.network(
+                                                'https://image.tmdb.org/t/p/w500${movie['poster_path']}',
+                                                fit: BoxFit.cover,
+                                              ),
+                                            ),
+                                          );
+                                        },
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          );
+                        }
+                      },
+                    );
+                  }
+                },
+              );
+            }
+          },
+        ),
     );
   }
 }
