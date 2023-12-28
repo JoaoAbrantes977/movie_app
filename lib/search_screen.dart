@@ -18,7 +18,6 @@ class _SearchMovieState extends State<SearchMovie> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white12,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0.0,
@@ -28,23 +27,12 @@ class _SearchMovieState extends State<SearchMovie> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            Row(
-              children: [
-                IconButton(
-                    onPressed: (){
-                      Navigator.pop(context);
-                },
-                  icon: Icon(Icons.arrow_back, color: Colors.white),
-                ),
-                Text(
-                  "Search for a movie",
-                  style: TextStyle(
-                    fontSize: 22,
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ],
+            Text(
+              "Search for a movie",
+              style: TextStyle(
+                fontSize: 26,
+                fontWeight: FontWeight.bold,
+              ),
             ),
             SizedBox(
               height: 20,
@@ -54,14 +42,13 @@ class _SearchMovieState extends State<SearchMovie> {
               style: TextStyle(color: Colors.white),
               decoration: InputDecoration(
                 filled: true,
-                fillColor: Colors.white54,
+                fillColor: Colors.grey,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8),
                   borderSide: BorderSide.none,
                 ),
                 hintText: "ex: The Godfather",
                 prefixIcon: Icon(Icons.search),
-                prefixIconColor: Colors.white,
               ),
               onChanged: _getSuggestions,
             ),
@@ -103,7 +90,6 @@ class _SearchMovieState extends State<SearchMovie> {
                                   style: TextStyle(
                                     fontSize: 16,
                                     fontWeight: FontWeight.bold,
-                                    color: Colors.white,
                                   ),
                                   maxLines: 2,
                                   overflow: TextOverflow.ellipsis,
@@ -112,7 +98,6 @@ class _SearchMovieState extends State<SearchMovie> {
                                   'Rating: ${suggestion.rating}',
                                   style: TextStyle(
                                     fontSize: 14,
-                                    color: Colors.white,
                                   ),
                                 )
                               ],
