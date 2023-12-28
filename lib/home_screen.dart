@@ -5,6 +5,8 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
+import 'package:movie_app/search_screen.dart';
+
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
 
@@ -113,17 +115,17 @@ class _HomeScreenState extends State<HomeScreen> {
         ],
         onTap: (index) {
           if (index == 0) {
-            Navigator.pushReplacement(
+            Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => LoginForm()),
+              MaterialPageRoute(builder: (context) => SearchMovie()),
             );
           } else if (index == 1) {
-            Navigator.pushReplacement(
+            Navigator.push(
               context,
               MaterialPageRoute(builder: (context) => LoginForm()),
             );
           } else {
-            Navigator.pushReplacement(
+            Navigator.push(
               context,
               MaterialPageRoute(builder: (context) => LoginForm()),
             );
@@ -165,15 +167,14 @@ class _HomeScreenState extends State<HomeScreen> {
                             children: [
                               Padding(
                                 padding: const EdgeInsets.all(18.0),
-                                child: Column(
-                                  children: [
-                                    const Text("Trending Movies"),
-                                    const SizedBox(height: 10,),
+                                child: SizedBox(
+                                  child:
                                     CarouselSlider(
                                       items: popularMovies.map((movie) {
                                         return Image.network(
                                           'https://image.tmdb.org/t/p/w500${movie['poster_path']}',
                                           fit: BoxFit.cover,
+                                          filterQuality: FilterQuality.high,
                                         );
                                       }).toList(),
                                       options: CarouselOptions(
@@ -184,10 +185,10 @@ class _HomeScreenState extends State<HomeScreen> {
                                         autoPlayCurve: Curves.fastOutSlowIn,
                                         enableInfiniteScroll: true,
                                         autoPlayAnimationDuration: const Duration(milliseconds: 800),
-                                        viewportFraction: 0.8,
+                                        viewportFraction: 0.4,
+                                        pageSnapping: true,
                                       ),
                                     ),
-                                  ],
                                 ),
                               ),
                               const SizedBox(height: 20),

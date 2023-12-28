@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
@@ -38,7 +39,7 @@ class _DescriptionScreenState extends State<DescriptionScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Movie Description'),
+        title: const Text(''),
       ),
       body: FutureBuilder<Map<String, dynamic>>(
         future: _movieDetails,
@@ -55,7 +56,8 @@ class _DescriptionScreenState extends State<DescriptionScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Title: ${movieDetails['title']}'),
+                  Text('${movieDetails['title']}',style: GoogleFonts.aboreto(fontSize: 24),),
+                  Image.network('https://image.tmdb.org/t/p/w500${movieDetails['poster_path']}', height: 300,),
                   Text('Description: ${movieDetails['overview']}'),
                   Text('Score: ${movieDetails['vote_average']}'),
                   Text('Duration: ${movieDetails['runtime']} minutes'),
