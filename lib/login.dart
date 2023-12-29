@@ -3,6 +3,39 @@ import 'package:movie_app/home_screen.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
+// Class User criada para guardar o email e o id do utilizador que faz login
+
+class User {
+  late String _id;
+  late String _email;
+
+  User(this._email, this._id);
+
+  String get email => _email;
+
+  set email(String value) {
+    _email = value;
+  }
+
+  String get id => _id;
+
+  set id(String value) {
+    _id = value;
+  }
+
+  static User? _userInstance;
+
+  static User get userInstance {
+    _userInstance ??= User("default_email", "default_id");
+    return _userInstance!;
+  }
+
+  static void setUserInstance(User user) {
+    _userInstance = user;
+  }
+}
+
+
 class LoginForm extends StatelessWidget {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passController = TextEditingController();
@@ -55,7 +88,7 @@ class LoginForm extends StatelessWidget {
                   createUser(email, password, context);
                   print(
                       'Login Button Pressed\nEmail: $email\nPassword: $password');
-                  print("Login efetuado com sucesso");
+                  print("Registo efetuado com sucesso");
                 } else {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
@@ -136,10 +169,21 @@ Future<void> verifyUser(String email, String password, context) async {
   );
 
   if (responseLogin.statusCode == 200) {
+
+    // User logged in successfully, extract user ID from the response
+    final Map<String, dynamic> responseData = jsonDecode(responseLogin.body);
+    Map<String, dynamic> userId = responseData['user'];
+    final String userIdDB = userId['id'].toString();
+
+    print(userIdDB  + " do login.dart");
+    User.setUserInstance(User(email, userIdDB));
+
+
+    //print("$userId");
     // User logged in successfully, navigate to HomePage
     Navigator.pushReplacement(
       context,
-      MaterialPageRoute(builder: (context) =>  HomeScreen()),
+      MaterialPageRoute(builder: (context) =>  const HomeScreen()),
     );
   } else if (responseLogin.statusCode == 400) {
     // Email or password are not correct
