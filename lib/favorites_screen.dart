@@ -25,12 +25,13 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
   @override
   void initState() {
     super.initState();
-    // Fetch favorite movie ids from your server
+    // Fetch favorite movie ids from the server
     fetchFavoriteMovies();
   }
 
+  // VAI BUSCAR CADA ID DOS FILMES ASSOCIADOS AO ID DE UMA CONTA DE UTILIZADOR
   Future<void> fetchFavoriteMovies() async {
-    final userIdDB = userId; // Replace with your user id
+    final userIdDB = userId; // id do utilizador
     final url = "http://10.0.2.2:3000/getFavMovies/$userIdDB";
 
     try {
@@ -53,9 +54,9 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
     }
   }
 
-
+// VAI BUSCAR OS DETALHES DO FILME CONFORME O ID DO FILME
   Future<void> fetchTMDBMovieDetails() async {
-    const tmdbApiKey = "9c2f0ada85abce310958785de988c4fb"; // Replace with your TMDB API key
+    const tmdbApiKey = "9c2f0ada85abce310958785de988c4fb";
 
     for (final movieId in favoriteMovieIds) {
       final tmdbUrl = "https://api.themoviedb.org/3/movie/$movieId";
@@ -78,6 +79,33 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
       }
     }
   }
+
+
+  Future<void> deleteFavoriteMovie(String idMovie) async {
+    // userId -> id do utilizador
+    // idMovie -> id do filme
+
+    final url = Uri.parse('http://10.0.2.2:3000/deleteFavMovies/$userId');
+
+    try {
+      final response = await http.delete(
+        url,
+        headers: {"Content-Type": "application/json"},
+        body: jsonEncode({"idMovie": idMovie}),
+      );
+
+      if (response.statusCode == 200) {
+        print("Successfully removed favorite movie.");
+
+      } else {
+        print("Failed to delete favorite movie. Status code: ${response.statusCode}");
+        print("Response body: ${response.body}");
+      }
+    } catch (e) {
+      print("Error: $e");
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -154,22 +182,38 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
           final movie = moviesData[index];
           final String posterPath = movie['poster_path'];
           final String title = movie['title'];
+          final String idMovie = movie['id'].toString();
 
           return Padding(
             padding: const EdgeInsets.all(8.0),
-            child: Column(
+            child: Row(
               children: [
-                Image.network(
-                  'https://image.tmdb.org/t/p/w200$posterPath',
+                SizedBox(
                   width: 100,
                   height: 150,
-                  fit: BoxFit.cover,
+                  child: Image.network(
+                    'https://image.tmdb.org/t/p/w200$posterPath',
+                    fit: BoxFit.cover,
+                  ),
                 ),
-                SizedBox(height: 8),
-                Text(
-                  title,
-                  style: const TextStyle(fontSize: 12),
-                  textAlign: TextAlign.center,
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        title,
+                        style: const TextStyle(fontSize: 12),
+                      ),
+                      const SizedBox(height: 8),
+                      IconButton(
+                        icon: const Icon(Icons.clear),
+                        onPressed: () {
+                          deleteFavoriteMovie(idMovie);
+                        },
+                      ),
+                    ],
+                  ),
                 ),
               ],
             ),
