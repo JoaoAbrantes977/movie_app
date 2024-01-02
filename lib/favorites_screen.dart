@@ -227,8 +227,14 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
                                     onPressed: () {
                                       deleteFavoriteMovie(idMovie);
                                       Navigator.of(context).pop();
+                                      setState(() {
+                                        Navigator.pushReplacement(
+                                            context,
+                                            MaterialPageRoute(builder: (context) => const FavoriteScreen())
+                                        );
+                                      });
                                     },
-                                    child: const Text('Yes'),
+                                    child: const Text('Sim'),
                                   ),
                                 ],
                               );
