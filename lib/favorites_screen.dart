@@ -207,9 +207,33 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
                       ),
                       const SizedBox(height: 8),
                       IconButton(
+                        enableFeedback: true,
                         icon: const Icon(Icons.clear),
                         onPressed: () {
-                          deleteFavoriteMovie(idMovie);
+                          showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return AlertDialog(
+                                title: const Text("Remover"),
+                                content: const Text("Deseja remover este filme dos favoritos"),
+                                actions: <Widget>[
+                                  TextButton(
+                                    onPressed: () {
+                                      Navigator.of(context).pop(); // remove o dialog
+                                    },
+                                    child: const Text('Não'),
+                                  ),
+                                  TextButton(
+                                    onPressed: () {
+                                      deleteFavoriteMovie(idMovie);
+                                      Navigator.of(context).pop();
+                                    },
+                                    child: const Text('Yes'),
+                                  ),
+                                ],
+                              );
+                            },
+                          );
                         },
                       ),
                     ],
