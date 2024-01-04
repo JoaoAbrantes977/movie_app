@@ -1,3 +1,4 @@
+import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:movie_app/search_screen.dart';
 import 'home_screen.dart';
@@ -31,11 +32,24 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
 
   // VAI BUSCAR CADA ID DOS FILMES ASSOCIADOS AO ID DE UMA CONTA DE UTILIZADOR
   Future<void> fetchFavoriteMovies() async {
+    var connectivityResult = await Connectivity().checkConnectivity();
+
+    if (connectivityResult == ConnectivityResult.none) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('No internet connection'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
     final userIdDB = userId; // id do utilizador
     final url = "http://10.0.2.2:3000/getFavMovies/$userIdDB";
 
     try {
       final response = await http.get(Uri.parse(url));
+
       if (response.statusCode == 200) {
         final List<dynamic> responseData = json.decode(response.body);
         final List<int> movieIds = responseData.map<int>((item) => item['id_Movie']).toList();
@@ -56,6 +70,17 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
 
 // VAI BUSCAR OS DETALHES DO FILME CONFORME O ID DO FILME
   Future<void> fetchTMDBMovieDetails() async {
+    var connectivityResult = await Connectivity().checkConnectivity();
+
+    if (connectivityResult == ConnectivityResult.none) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('No internet connection'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
     const tmdbApiKey = "9c2f0ada85abce310958785de988c4fb";
 
     for (final movieId in favoriteMovieIds) {
@@ -80,10 +105,22 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
     }
   }
 
-
+// DELETES THE SELECTED MOVIE BY THE USER
   Future<void> deleteFavoriteMovie(String idMovie) async {
     // userId -> id do utilizador
     // idMovie -> id do filme
+
+    var connectivityResult = await Connectivity().checkConnectivity();
+
+    if (connectivityResult == ConnectivityResult.none) {
+      // No internet connection, show a SnackBar
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('No internet connection'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
 
     final url = Uri.parse('http://10.0.2.2:3000/deleteFavMovies/$userId');
 
@@ -105,7 +142,6 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
       print("Error: $e");
     }
   }
-
 
   @override
   Widget build(BuildContext context) {

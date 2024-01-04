@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:movie_app/description_screen.dart';
+import 'package:movie_app/favorites_screen.dart';
 import 'package:movie_app/login.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-
 import 'package:movie_app/search_screen.dart';
 
+
 class HomeScreen extends StatefulWidget {
+
   const HomeScreen({Key? key}) : super(key: key);
 
   @override
@@ -15,9 +17,11 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+
   final String apiKey = "9c2f0ada85abce310958785de988c4fb";
 
   Future<List<Map<String, dynamic>>> fetchMovies(String endpoint) async {
+
     final response = await http.get(
       Uri.parse('https://api.themoviedb.org/3/movie/$endpoint?api_key=$apiKey'),
     );
@@ -115,19 +119,19 @@ class _HomeScreenState extends State<HomeScreen> {
         ],
         onTap: (index) {
           if (index == 0) {
-            Navigator.push(
+            Navigator.pushReplacement(
               context,
-              MaterialPageRoute(builder: (context) => SearchMovie()),
+              MaterialPageRoute(builder: (context) => const SearchMovie()),
             );
           } else if (index == 1) {
-            Navigator.push(
+            Navigator.pushReplacement(
               context,
-              MaterialPageRoute(builder: (context) => LoginForm()),
+              MaterialPageRoute(builder: (context) => const HomeScreen()),
             );
           } else {
-            Navigator.push(
+            Navigator.pushReplacement(
               context,
-              MaterialPageRoute(builder: (context) => LoginForm()),
+              MaterialPageRoute(builder: (context) => const FavoriteScreen()),
             );
           }
         },
@@ -138,7 +142,17 @@ class _HomeScreenState extends State<HomeScreen> {
             if (popularMoviesSnapshot.connectionState == ConnectionState.waiting) {
               return const Center(child: CircularProgressIndicator());
             } else if (popularMoviesSnapshot.hasError) {
-              return Center(child: Text('Error: ${popularMoviesSnapshot.error}'));
+              return const Center(child: Column(
+                children: <Widget>[
+                  Icon(
+                    Icons.warning,
+                    color: Colors.red,
+                    size: 50,
+                  ),
+                  Text("Please check your Internet Connection"),
+                ],
+              )
+              );
             } else {
               final List<Map<String, dynamic>> popularMovies = popularMoviesSnapshot.data!;
 
@@ -148,7 +162,17 @@ class _HomeScreenState extends State<HomeScreen> {
                   if (topRatedMoviesSnapshot.connectionState == ConnectionState.waiting) {
                     return const Center(child: CircularProgressIndicator());
                   } else if (topRatedMoviesSnapshot.hasError) {
-                    return Center(child: Text('Error: ${topRatedMoviesSnapshot.error}'));
+                    return const Center(child: Column(
+                      children: <Widget>[
+                        Icon(
+                          Icons.warning,
+                          color: Colors.red,
+                          size: 50,
+                        ),
+                        Text("Please check your Internet Connection"),
+                      ],
+                    )
+                    );
                   } else {
                     final List<Map<String, dynamic>> topRatedMovies = topRatedMoviesSnapshot.data!;
 
@@ -158,7 +182,17 @@ class _HomeScreenState extends State<HomeScreen> {
                         if (upcomingMoviesSnapshot.connectionState == ConnectionState.waiting) {
                           return const Center(child: CircularProgressIndicator());
                         } else if (upcomingMoviesSnapshot.hasError) {
-                          return Center(child: Text('Error: ${upcomingMoviesSnapshot.error}'));
+                          return const Center(child: Column(
+                            children: <Widget>[
+                              Icon(
+                                Icons.warning,
+                                color: Colors.red,
+                                size: 50,
+                              ),
+                              Text("Please check your Internet Connection"),
+                            ],
+                          )
+                          );
                         } else {
                           final List<Map<String, dynamic>> upcomingMovies = upcomingMoviesSnapshot.data!;
 
@@ -167,14 +201,15 @@ class _HomeScreenState extends State<HomeScreen> {
                             children: [
                               Padding(
                                 padding: const EdgeInsets.all(18.0),
-                                child: SizedBox(
-                                  child:
+                                child: Column(
+                                  children: [
+                                    const Text("Trending Movies"),
+                                    const SizedBox(height: 10,),
                                     CarouselSlider(
                                       items: popularMovies.map((movie) {
                                         return Image.network(
                                           'https://image.tmdb.org/t/p/w500${movie['poster_path']}',
                                           fit: BoxFit.cover,
-                                          filterQuality: FilterQuality.high,
                                         );
                                       }).toList(),
                                       options: CarouselOptions(
@@ -185,10 +220,10 @@ class _HomeScreenState extends State<HomeScreen> {
                                         autoPlayCurve: Curves.fastOutSlowIn,
                                         enableInfiniteScroll: true,
                                         autoPlayAnimationDuration: const Duration(milliseconds: 800),
-                                        viewportFraction: 0.4,
-                                        pageSnapping: true,
+                                        viewportFraction: 0.8,
                                       ),
                                     ),
+                                  ],
                                 ),
                               ),
                               const SizedBox(height: 20),
