@@ -1,7 +1,7 @@
-import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+
 import 'description_screen.dart';
 
 class SearchMovie extends StatefulWidget {
@@ -15,58 +15,44 @@ class _SearchMovieState extends State<SearchMovie> {
   TextEditingController _searchController = TextEditingController();
   List<MovieSuggestion> _suggestions = [];
 
-  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white12,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0.0,
       ),
       body: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.all(16),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            Row(
-              children: [
-                IconButton(
-                  onPressed: (){
-                    Navigator.pop(context);
-                  },
-                  icon: const Icon(Icons.arrow_back, color: Colors.white),
-                ),
-                const Text(
-                  "Search for a movie",
-                  style: TextStyle(
-                    fontSize: 22,
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ],
+            Text(
+              "Search for a movie",
+              style: TextStyle(
+                fontSize: 26,
+                fontWeight: FontWeight.bold,
+              ),
             ),
-            const SizedBox(
+            SizedBox(
               height: 20,
             ),
             TextField(
               controller: _searchController,
-              style: const TextStyle(color: Colors.white),
+              style: TextStyle(color: Colors.white),
               decoration: InputDecoration(
                 filled: true,
-                fillColor: Colors.white54,
+                fillColor: Colors.grey,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8),
                   borderSide: BorderSide.none,
                 ),
                 hintText: "ex: The Godfather",
-                prefixIcon: const Icon(Icons.search),
-                prefixIconColor: Colors.white,
+                prefixIcon: Icon(Icons.search),
               ),
               onChanged: _getSuggestions,
             ),
-            const SizedBox(height: 20),
+            SizedBox(height: 20),
             Expanded(
               child: ListView.builder(
                 itemCount: _suggestions.length,
@@ -94,26 +80,24 @@ class _SearchMovieState extends State<SearchMovie> {
                             height: 50,
                             fit: BoxFit.cover,
                           ),
-                          const SizedBox(width: 8),
+                          SizedBox(width: 8),
                           Expanded(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
                                   suggestion.title,
-                                  style: const TextStyle(
+                                  style: TextStyle(
                                     fontSize: 16,
                                     fontWeight: FontWeight.bold,
-                                    color: Colors.white,
                                   ),
                                   maxLines: 2,
                                   overflow: TextOverflow.ellipsis,
                                 ),
                                 Text(
                                   'Rating: ${suggestion.rating}',
-                                  style: const TextStyle(
+                                  style: TextStyle(
                                     fontSize: 14,
-                                    color: Colors.white,
                                   ),
                                 )
                               ],
@@ -132,25 +116,11 @@ class _SearchMovieState extends State<SearchMovie> {
     );
   }
 
-  // obter filmes
   Future<void> _getSuggestions(String query) async {
+    final String apiKey = '9c2f0ada85abce310958785de988c4fb'; // Substitua pela sua própria chave da API TMDb
+    final String baseUrl = 'https://api.themoviedb.org/3/search/movie';
 
-    var connectivityResult = await Connectivity().checkConnectivity();
-
-    if (connectivityResult == ConnectivityResult.none) {
-      // No internet connection, show a SnackBar
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('No internet connection'),
-          backgroundColor: Colors.red,
-        ),
-      );
-      return;
-    }
-
-    const String apiKey = '9c2f0ada85abce310958785de988c4fb';
-    const String baseUrl = 'https://api.themoviedb.org/3/search/movie';
-
+    // Evite chamadas desnecessárias para consultas vazias
     if (query.isEmpty) {
       setState(() {
         _suggestions = [];
