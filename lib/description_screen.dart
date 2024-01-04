@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'login.dart';
+import 'package:connectivity/connectivity.dart';
+
 
 // Acede a classe User
 User user = User.userInstance;
@@ -28,36 +30,55 @@ class _DescriptionScreenState extends State<DescriptionScreen> {
 
   //movieIdDescription vem da requisição feita na API
   // ENVIA O ID DO USER E O ID DO FILME
-  Future<void> favmovie(String movieIdDescription, String idUser) async {
-   //print("$movieIdDescription $idUser");
-    final responseRegister = await http.post(
-      Uri.parse('http://10.0.2.2:3000/insertMovie'),
+  Future<void> favmovie(String movieIdDescription, String idUser, BuildContext context) async {
+    var connectivityResult = await Connectivity().checkConnectivity();
 
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
-      },
-      body: jsonEncode(<String, String>{
-        'idUser': idUser,
-        'idMovie': movieIdDescription,
-      }),
-    );
-
-    if (responseRegister.statusCode == 200) {
+    if (connectivityResult == ConnectivityResult.none) {
+      // No internet connection, show a SnackBar
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text("Succefully added to your Favorites"),
-          backgroundColor: Colors.green,
+          content: Text('No internet connection'),
+          backgroundColor: Colors.red,
         ),
       );
-    } else if (responseRegister.statusCode == 400) {
-      // Email already exists, show a SnackBar
-      final Map<String, dynamic> errorData = jsonDecode(responseRegister.body);
-      final String errorMessage = errorData['error'];
-    } else {
-      // Unexpected error, show a generic SnackBar
+      return;
+    }
+    try {
+      final responseRegister = await http.post(
+        Uri.parse('http://10.0.2.2:3000/insertMovie'),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode(<String, String>{
+          'idUser': idUser,
+          'idMovie': movieIdDescription,
+        }),
+      );
+
+      if (responseRegister.statusCode == 200) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("Successfully added to your Favorites"),
+            backgroundColor: Colors.green,
+          ),
+        );
+      } else if (responseRegister.statusCode == 400) {
+        final Map<String, dynamic> errorData = jsonDecode(responseRegister.body);
+        final String errorMessage = errorData['error'];
+      } else {
+        // Handle other status codes
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Unexpected error occurred'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } catch (error) {
+      // Handle other errors (e.g., timeouts)
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Unexpected error occurred'),
+          content: Text('Error occurred'),
           backgroundColor: Colors.red,
         ),
       );
@@ -66,6 +87,7 @@ class _DescriptionScreenState extends State<DescriptionScreen> {
 
   // REQUISIÇÃO À API DO TMDB PARA CARREGAR OS DADOS DE UM FILME POR ID
   Future<Map<String, dynamic>> fetchMovieDetails(int movieId) async {
+
     const apiKey = "9c2f0ada85abce310958785de988c4fb"; // Replace with your API key
     final response = await http.get(
       Uri.parse('https://api.themoviedb.org/3/movie/$movieId?api_key=$apiKey'),
@@ -91,7 +113,18 @@ class _DescriptionScreenState extends State<DescriptionScreen> {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
+            return const Center(
+                child: Column(
+                  children: <Widget>[
+                    Icon(
+                      Icons.warning,
+                      color: Colors.red,
+                      size: 50,
+                    ),
+                    Text("Please check your Internet Connection"),
+                  ],
+                )
+            );
           } else {
             final movieDetails = snapshot.data!;
             final movieIdDescription = movieDetails['id'].toString();
@@ -107,7 +140,7 @@ class _DescriptionScreenState extends State<DescriptionScreen> {
                   Text('Duration: ${movieDetails['runtime']} minutes'),
                   Text('Genres: ${movieDetails['genres'].map((genre) => genre['name']).join(', ')}'),
                   ElevatedButton(
-                      onPressed: () => favmovie(movieIdDescription,userId),
+                      onPressed: () => favmovie(movieIdDescription,userId, context),
                       child: const Text("Add to Favorites"))
                   // Add more details as needed
                 ],

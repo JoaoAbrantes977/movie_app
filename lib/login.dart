@@ -1,10 +1,11 @@
+import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:movie_app/home_screen.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
-// Class User criada para guardar o email e o id do utilizador que faz login
 
+// Class User criada para guardar o email e o id do utilizador que faz login
 class User {
   late String _id;
   late String _email;
@@ -110,45 +111,68 @@ class LoginForm extends StatelessWidget {
 
 // CREATE USER //
 Future<void> createUser(String email, String password, context) async {
-  final responseRegister = await http.post(
-    Uri.parse('http://10.0.2.2:3000/register'),
-    headers: <String, String>{
-      'Content-Type': 'application/json; charset=UTF-8',
-    },
-    body: jsonEncode(<String, String>{
-      'name': email,
-      'pass': password,
-    }),
-  );
 
-  if (responseRegister.statusCode == 200) {
+    var connectivityResult = await Connectivity().checkConnectivity();
+
+    if (connectivityResult == ConnectivityResult.none) {
+      // No internet connection, show a SnackBar
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('No internet connection'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+    try {
+    final responseRegister = await http.post(
+      Uri.parse('http://10.0.2.2:3000/register'),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(<String, String>{
+        'name': email,
+        'pass': password,
+      }),
+    );
+
+    if (responseRegister.statusCode == 200) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("User Signed In Successfully"),
+          backgroundColor: Colors.green,
+        ),
+      );
+      // User created successfully, navigate to HomePage
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => LoginForm()),
+      );
+    } else if (responseRegister.statusCode == 400) {
+      // Email already exists, show a SnackBar
+      final Map<String, dynamic> errorData = jsonDecode(responseRegister.body);
+      final String errorMessage = errorData['error'];
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(errorMessage),
+          backgroundColor: Colors.red,
+        ),
+      );
+    } else {
+      // Unexpected error, show a generic SnackBar
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Unexpected error occurred'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  } catch (error) {
+    // Handle other errors (e.g., timeouts, network issues)
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
-        content: Text("User Signed In Succefully"),
-        backgroundColor: Colors.green,
-      ),
-    );
-    // User created successfully, navigate to HomePage
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (context) => LoginForm()),
-    );
-  } else if (responseRegister.statusCode == 400) {
-    // Email already exists, show a SnackBar
-    final Map<String, dynamic> errorData = jsonDecode(responseRegister.body);
-    final String errorMessage = errorData['error'];
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(errorMessage),
-        backgroundColor: Colors.red,
-      ),
-    );
-  } else {
-    // Unexpected error, show a generic SnackBar
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Unexpected error occurred'),
+        content: Text('Error occurred'),
         backgroundColor: Colors.red,
       ),
     );
@@ -157,50 +181,70 @@ Future<void> createUser(String email, String password, context) async {
 
 // VERIFY USER //
 Future<void> verifyUser(String email, String password, context) async {
-  final responseLogin = await http.post(
-    Uri.parse('http://10.0.2.2:3000/login'),
-    headers: <String, String>{
-      'Content-Type': 'application/json; charset=UTF-8',
-    },
-    body: jsonEncode(<String, String>{
-      'name': email,
-      'pass': password,
-    }),
-  );
 
-  if (responseLogin.statusCode == 200) {
+    var connectivityResult = await Connectivity().checkConnectivity();
 
-    // User logged in successfully, extract user ID from the response
-    final Map<String, dynamic> responseData = jsonDecode(responseLogin.body);
-    Map<String, dynamic> userId = responseData['user'];
-    final String userIdDB = userId['id'].toString();
-
-    print(userIdDB  + " do login.dart");
-    User.setUserInstance(User(email, userIdDB));
-
-
-    //print("$userId");
-    // User logged in successfully, navigate to HomePage
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (context) =>  const HomeScreen()),
+    if (connectivityResult == ConnectivityResult.none) {
+      // No internet connection, show a SnackBar
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('No internet connection'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+    try {
+    final responseLogin = await http.post(
+      Uri.parse('http://10.0.2.2:3000/login'),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(<String, String>{
+        'name': email,
+        'pass': password,
+      }),
     );
-  } else if (responseLogin.statusCode == 400) {
-    // Email or password are not correct
-    final Map<String, dynamic> errorData = jsonDecode(responseLogin.body);
-    final String errorMessage = errorData['error'];
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(errorMessage),
-        backgroundColor: Colors.red,
-      ),
-    );
-  } else {
-    // Unexpected error, show a generic SnackBar
+    if (responseLogin.statusCode == 200) {
+      // User logged in successfully, extract user ID from the response
+      final Map<String, dynamic> responseData = jsonDecode(responseLogin.body);
+      Map<String, dynamic> userId = responseData['user'];
+      final String userIdDB = userId['id'].toString();
+
+      print(userIdDB + " do login.dart");
+      User.setUserInstance(User(email, userIdDB));
+
+      // User logged in successfully, navigate to HomePage
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const HomeScreen()),
+      );
+    } else if (responseLogin.statusCode == 400) {
+      // Email or password are not correct
+      final Map<String, dynamic> errorData = jsonDecode(responseLogin.body);
+      final String errorMessage = errorData['error'];
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(errorMessage),
+          backgroundColor: Colors.red,
+        ),
+      );
+    } else {
+      // Unexpected error, show a generic SnackBar
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Unexpected error occurred'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  } catch (error) {
+    // Handle other errors (e.g., timeouts, network issues)
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
-        content: Text('Unexpected error occurred'),
+        content: Text('Error occurred'),
         backgroundColor: Colors.red,
       ),
     );
