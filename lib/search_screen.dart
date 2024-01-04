@@ -15,6 +15,7 @@ class _SearchMovieState extends State<SearchMovie> {
   TextEditingController _searchController = TextEditingController();
   List<MovieSuggestion> _suggestions = [];
 
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
