@@ -59,11 +59,18 @@ class _DescriptionScreenState extends State<DescriptionScreen> {
                   Stack(
                     alignment: Alignment.bottomLeft,
                     children: [
-                      Image.network(
-                        'https://image.tmdb.org/t/p/w500${movieDetails['poster_path']}',
-                        height: 300,
-                        width: double.infinity,
-                        fit: BoxFit.cover,
+                      ClipRRect(
+                        borderRadius: BorderRadius.only(
+                          bottomLeft: Radius.circular(16),
+                          bottomRight: Radius.circular(16),
+                        ),
+                        child: Image.network(
+                          'https://image.tmdb.org/t/p/w500${movieDetails['poster_path']}',
+                          height: 300,
+                          width: double.infinity,
+                          fit: BoxFit.cover,
+                          alignment: Alignment.topCenter, // Ajuste a posição da imagem aqui
+                        ),
                       ),
                       Padding(
                         padding: const EdgeInsets.all(16.0),
