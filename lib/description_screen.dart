@@ -97,13 +97,21 @@ class _DescriptionScreenState extends State<DescriptionScreen> {
                           style: TextStyle(fontSize: 16, color: Colors.grey),
                         ),
                         SizedBox(height: 16),
-                        Text(
-                          'Score: ${movieDetails['vote_average']}',
-                          style: TextStyle(fontSize: 16),
-                        ),
-                        Text(
-                          'Duration: ${movieDetails['runtime']} minutes',
-                          style: TextStyle(fontSize: 16),
+                        Row( // Usando Row para colocar o score e a duração lado a lado
+                          children: [
+                            Expanded(
+                              child: Text(
+                                'Score: ${movieDetails['vote_average']}',
+                                style: TextStyle(fontSize: 16),
+                              ),
+                            ),
+                            Expanded(
+                              child: Text(
+                                'Duration: ${movieDetails['runtime']} minutes',
+                                style: TextStyle(fontSize: 16),
+                              ),
+                            ),
+                          ],
                         ),
                         Text(
                           'Genres: ${movieDetails['genres'].map((genre) => genre['name']).join(', ')}',
@@ -126,29 +134,31 @@ class _DescriptionScreenState extends State<DescriptionScreen> {
                             itemCount: cast.length,
                             itemBuilder: (context, index) {
                               final actor = cast[index];
-                              return Container(
-                                width: 80, // Ajuste a largura conforme necessário
-                                padding: EdgeInsets.all(8),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    ClipRRect(
-                                      borderRadius: BorderRadius.circular(40),
-                                      child: CircleAvatar(
-                                        radius: 40,
-                                        backgroundImage: actor['profile_path'] != null
-                                            ? NetworkImage('https://image.tmdb.org/t/p/w200${actor['profile_path']}')
-                                            : AssetImage('assets/placeholder.jpg') as ImageProvider,
+                              return Flexible(
+                                child: Container(
+                                  width: 80, // Ajuste a largura conforme necessário
+                                  margin: EdgeInsets.only(right: 10), // Adicione um espaço entre os atores
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                    children: [
+                                      ClipRRect(
+                                        borderRadius: BorderRadius.circular(40),
+                                        child: CircleAvatar(
+                                          radius: 40,
+                                          backgroundImage: actor['profile_path'] != null
+                                              ? NetworkImage('https://image.tmdb.org/t/p/w200${actor['profile_path']}')
+                                              : AssetImage('assets/placeholder.jpg') as ImageProvider,
+                                        ),
                                       ),
-                                    ),
-                                    SizedBox(height: 8),
-                                    Text(
-                                      actor['name'],
-                                      style: TextStyle(fontSize: 12),
-                                      maxLines: 2,
-                                      textAlign: TextAlign.center,
-                                    ),
-                                  ],
+                                      SizedBox(height: 8),
+                                      Text(
+                                        actor['name'],
+                                        style: TextStyle(fontSize: 11),
+                                        maxLines: 2,
+                                        textAlign: TextAlign.center,
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               );
                             },
