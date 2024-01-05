@@ -27,9 +27,7 @@ class _HomeScreenState extends State<HomeScreen> {
     Connectivity().onConnectivityChanged.listen((ConnectivityResult result) {
       if (result == ConnectivityResult.mobile || result == ConnectivityResult.wifi) {
         setState(() {
-          fetchMovies('popular');
-          fetchMovies('top_rated');
-          fetchMovies('upcoming');
+
         });
       }
     });
