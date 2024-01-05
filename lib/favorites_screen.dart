@@ -29,6 +29,21 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
     super.initState();
     // Fetch favorite movie ids from the server
     fetchFavoriteMovies();
+    // Add a listener to check for internet connectivity changes
+    Connectivity().onConnectivityChanged.listen((ConnectivityResult result) {
+      if (result == ConnectivityResult.mobile || result == ConnectivityResult.wifi) {
+        setState(() {
+          moviesData.clear(); 
+        });
+        fetchFavoriteMovies();
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Internet Connection Restored'),
+            backgroundColor: Colors.green,
+          ),
+        );
+      }
+    });
   }
 
   // VAI BUSCAR CADA ID DOS FILMES ASSOCIADOS AO ID DE UMA CONTA DE UTILIZADOR

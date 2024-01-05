@@ -1,48 +1,32 @@
-/*
+import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:flutter/material.dart';
-import 'package:movie_app/home_screen.dart';
 
-class NoInternetWarning extends StatelessWidget {
-  const NoInternetWarning({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
-        appBar: AppBar(
-          backgroundColor: Colors.blue,
-          title: const Text('No Internet Connection'),
-        ),
-        body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Icon(
-                Icons.warning,
-                color: Colors.red,
-                size: 50,
-              ),
-              const SizedBox(height: 16),
-              const Text(
-                'No internet connection',
-                style: TextStyle(fontSize: 18),
-              ),
-              const SizedBox(height: 16),
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(builder: (context) => const HomeScreen()),
-                  );
-                },
-                child: const Text('Retry'),
-              ),
-            ],
-          ),
-        ),
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await AwesomeNotifications().initialize(
+    'resource://drawable/res_app_icon',
+    [
+      NotificationChannel(
+        channelKey: 'basic_channel',
+        channelName: 'Basic notifications',
+        channelDescription: 'Notification channel for basic notifications',
+        defaultColor: Color(0xFF9D50DD),
+        ledColor: Colors.white,
       ),
-    );
-  }
+    ],
+  );
 }
 
-*/
+void scheduleNotification() async {
+  await AwesomeNotifications().createNotification(
+    content: NotificationContent(
+      id: 0,
+      channelKey: 'basic_channel',
+      title: 'Scheduled Notification',
+      body: 'This notification was scheduled at a specific time.',
+    ),
+    schedule: NotificationCalendar(
+      second: DateTime.now().second + 10, // Schedule the notification 10 seconds from now
+    ),
+  );
+}
