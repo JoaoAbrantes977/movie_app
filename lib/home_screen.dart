@@ -1,3 +1,4 @@
+import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:movie_app/description_screen.dart';
 import 'package:movie_app/favorites_screen.dart';
@@ -17,6 +18,22 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+
+    Connectivity().onConnectivityChanged.listen((ConnectivityResult result) {
+      if (result == ConnectivityResult.mobile || result == ConnectivityResult.wifi) {
+        setState(() {
+          fetchMovies('popular');
+          fetchMovies('top_rated');
+          fetchMovies('upcoming');
+        });
+      }
+    });
+  }
 
   final String apiKey = "9c2f0ada85abce310958785de988c4fb";
 
