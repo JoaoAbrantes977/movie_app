@@ -38,7 +38,7 @@ class _DescriptionScreenState extends State<DescriptionScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Movie Details'),
+        title: const Text('Movie Details'),
       ),
       body: FutureBuilder<Map<String, dynamic>>(
         future: _movieDetails,
@@ -60,7 +60,7 @@ class _DescriptionScreenState extends State<DescriptionScreen> {
                     alignment: Alignment.bottomLeft,
                     children: [
                       ClipRRect(
-                        borderRadius: BorderRadius.only(
+                        borderRadius: const BorderRadius.only(
                           bottomLeft: Radius.circular(16),
                           bottomRight: Radius.circular(16),
                         ),
@@ -76,7 +76,7 @@ class _DescriptionScreenState extends State<DescriptionScreen> {
                         padding: const EdgeInsets.all(16.0),
                         child: Text(
                           movieDetails['title'],
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontSize: 24,
                             fontWeight: FontWeight.bold,
                             color: Colors.white,
@@ -91,7 +91,7 @@ class _DescriptionScreenState extends State<DescriptionScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
+                        const Text(
                           'Description:',
                           style: TextStyle(
                             fontSize: 18,
@@ -101,9 +101,9 @@ class _DescriptionScreenState extends State<DescriptionScreen> {
                         ),
                         Text(
                           movieDetails['overview'] ?? 'No description available',
-                          style: TextStyle(fontSize: 16, color: Colors.grey),
+                          style: const TextStyle(fontSize: 16, color: Colors.grey),
                         ),
-                        SizedBox(height: 16),
+                        const SizedBox(height: 16),
                         Row( // Usando Row para colocar o score e a duração lado a lado
                           children: [
                             Expanded(
@@ -115,17 +115,17 @@ class _DescriptionScreenState extends State<DescriptionScreen> {
                             Expanded(
                               child: Text(
                                 'Duration: ${movieDetails['runtime']} minutes',
-                                style: TextStyle(fontSize: 16),
+                                style: const TextStyle(fontSize: 16),
                               ),
                             ),
                           ],
                         ),
                         Text(
                           'Genres: ${movieDetails['genres'].map((genre) => genre['name']).join(', ')}',
-                          style: TextStyle(fontSize: 16),
+                          style: const TextStyle(fontSize: 16),
                         ),
-                        SizedBox(height: 16),
-                        Text(
+                        const SizedBox(height: 16),
+                        const Text(
                           'Cast:',
                           style: TextStyle(
                             fontSize: 18,
@@ -144,7 +144,7 @@ class _DescriptionScreenState extends State<DescriptionScreen> {
                               return Flexible(
                                 child: Container(
                                   width: 80, // Ajuste a largura conforme necessário
-                                  margin: EdgeInsets.only(right: 10), // Adicione um espaço entre os atores
+                                  margin: const EdgeInsets.only(right: 10), // Adicione um espaço entre os atores
                                   child: Column(
                                     crossAxisAlignment: CrossAxisAlignment.center,
                                     children: [
@@ -154,13 +154,13 @@ class _DescriptionScreenState extends State<DescriptionScreen> {
                                           radius: 40,
                                           backgroundImage: actor['profile_path'] != null
                                               ? NetworkImage('https://image.tmdb.org/t/p/w200${actor['profile_path']}')
-                                              : AssetImage('assets/placeholder.jpg') as ImageProvider,
+                                              : const AssetImage('assets/placeholder.jpg') as ImageProvider,
                                         ),
                                       ),
-                                      SizedBox(height: 8),
+                                      const SizedBox(height: 8),
                                       Text(
                                         actor['name'],
-                                        style: TextStyle(fontSize: 11),
+                                        style: const TextStyle(fontSize: 11),
                                         maxLines: 2,
                                         textAlign: TextAlign.center,
                                       ),
