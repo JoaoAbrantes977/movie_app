@@ -1,7 +1,7 @@
+import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-
 import 'description_screen.dart';
 
 class SearchMovie extends StatefulWidget {
@@ -117,7 +117,21 @@ class _SearchMovieState extends State<SearchMovie> {
   }
 
   Future<void> _getSuggestions(String query) async {
-    final String apiKey = '9c2f0ada85abce310958785de988c4fb'; // Substitua pela sua própria chave da API TMDb
+
+    var connectivityResult = await Connectivity().checkConnectivity();
+
+    if (connectivityResult == ConnectivityResult.none) {
+      // No internet connection, show a SnackBar
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('No internet connection'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
+    final String apiKey = '9c2f0ada85abce310958785de988c4fb';
     final String baseUrl = 'https://api.themoviedb.org/3/search/movie';
 
     // Evite chamadas desnecessárias para consultas vazias
