@@ -1,19 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'login.dart';
-import 'package:connectivity/connectivity.dart';
-
-
-// Acede a classe User
-User user = User.userInstance;
-String userEmail = user.email;
-String userId = user.id;
 
 class DescriptionScreen extends StatefulWidget {
   final int movieId;
 
-  const DescriptionScreen({super.key, required this.movieId});
+  const DescriptionScreen({Key? key, required this.movieId}) : super(key: key);
 
   @override
   _DescriptionScreenState createState() => _DescriptionScreenState();
@@ -28,76 +20,10 @@ class _DescriptionScreenState extends State<DescriptionScreen> {
     _movieDetails = fetchMovieDetails(widget.movieId);
   }
 
-  //movieIdDescription vem da requisição feita na API
-  // ENVIA O ID DO USER E O ID DO FILME
-  Future<void> favmovie(String movieIdDescription, String idUser, BuildContext context) async {
-    var connectivityResult = await Connectivity().checkConnectivity();
-
-    if (connectivityResult == ConnectivityResult.none) {
-      // No internet connection, show a SnackBar
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('No internet connection'),
-          backgroundColor: Colors.red,
-        ),
-      );
-      return;
-    }
-    try {
-      final responseRegister = await http.post(
-        Uri.parse('http://10.0.2.2:3000/insertMovie'),
-        headers: <String, String>{
-          'Content-Type': 'application/json; charset=UTF-8',
-        },
-        body: jsonEncode(<String, String>{
-          'idUser': idUser,
-          'idMovie': movieIdDescription,
-        }),
-      );
-
-      if (responseRegister.statusCode == 200) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text("Successfully added to your Favorites"),
-            backgroundColor: Colors.green,
-          ),
-        );
-      } else if (responseRegister.statusCode == 400) {
-        final Map<String, dynamic> errorData = jsonDecode(responseRegister.body);
-        final String errorMessage = errorData['error'];
-
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(errorMessage),
-            backgroundColor: Colors.red,
-          ),
-        );
-      } else {
-        // Handle other status codes
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Unexpected error occurred'),
-            backgroundColor: Colors.red,
-          ),
-        );
-      }
-    } catch (error) {
-      // Handle other errors (e.g., timeouts)
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Error occurred'),
-          backgroundColor: Colors.red,
-        ),
-      );
-    }
-  }
-
-  // REQUISIÇÃO À API DO TMDB PARA CARREGAR OS DADOS DE UM FILME POR ID
   Future<Map<String, dynamic>> fetchMovieDetails(int movieId) async {
-
-    const apiKey = "9c2f0ada85abce310958785de988c4fb"; // Replace with your API key
+    const apiKey = "9c2f0ada85abce310958785de988c4fb"; // Substitua pela sua própria chave da API
     final response = await http.get(
-      Uri.parse('https://api.themoviedb.org/3/movie/$movieId?api_key=$apiKey'),
+      Uri.parse('https://api.themoviedb.org/3/movie/$movieId?api_key=$apiKey&append_to_response=credits'),
     );
 
     if (response.statusCode == 200) {
@@ -112,7 +38,7 @@ class _DescriptionScreenState extends State<DescriptionScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Movie Description'),
+        title: Text('Movie Details'),
       ),
       body: FutureBuilder<Map<String, dynamic>>(
         future: _movieDetails,
@@ -120,36 +46,117 @@ class _DescriptionScreenState extends State<DescriptionScreen> {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
-            return const Center(
-                child: Column(
-                  children: <Widget>[
-                    Icon(
-                      Icons.warning,
-                      color: Colors.red,
-                      size: 50,
-                    ),
-                    Text("Please check your Internet Connection"),
-                  ],
-                )
-            );
+            return Center(child: Text('Error: ${snapshot.error}'));
           } else {
             final movieDetails = snapshot.data!;
-            final movieIdDescription = movieDetails['id'].toString();
+            final List<dynamic> cast = movieDetails['credits']['cast'];
 
-            return Padding(
-              padding: const EdgeInsets.all(16.0),
+            return SingleChildScrollView(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Title: ${movieDetails['title']}'),
-                  Text('Description: ${movieDetails['overview']}'),
-                  Text('Score: ${movieDetails['vote_average']}'),
-                  Text('Duration: ${movieDetails['runtime']} minutes'),
-                  Text('Genres: ${movieDetails['genres'].map((genre) => genre['name']).join(', ')}'),
-                  ElevatedButton(
-                      onPressed: () => favmovie(movieIdDescription,userId, context),
-                      child: const Text("Add to Favorites"))
-                  // Add more details as needed
+                  // Header Section
+                  Stack(
+                    alignment: Alignment.bottomLeft,
+                    children: [
+                      Image.network(
+                        'https://image.tmdb.org/t/p/w500${movieDetails['poster_path']}',
+                        height: 300,
+                        width: double.infinity,
+                        fit: BoxFit.cover,
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Text(
+                          movieDetails['title'],
+                          style: TextStyle(
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  // Body Section
+                  Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Description:',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black,
+                          ),
+                        ),
+                        Text(
+                          movieDetails['overview'] ?? 'No description available',
+                          style: TextStyle(fontSize: 16, color: Colors.grey),
+                        ),
+                        SizedBox(height: 16),
+                        Text(
+                          'Score: ${movieDetails['vote_average']}',
+                          style: TextStyle(fontSize: 16),
+                        ),
+                        Text(
+                          'Duration: ${movieDetails['runtime']} minutes',
+                          style: TextStyle(fontSize: 16),
+                        ),
+                        Text(
+                          'Genres: ${movieDetails['genres'].map((genre) => genre['name']).join(', ')}',
+                          style: TextStyle(fontSize: 16),
+                        ),
+                        SizedBox(height: 16),
+                        Text(
+                          'Cast:',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black,
+                          ),
+                        ),
+                        // Lista de Atores
+                        SizedBox(
+                          height: 120,
+                          child: ListView.builder(
+                            scrollDirection: Axis.horizontal,
+                            itemCount: cast.length,
+                            itemBuilder: (context, index) {
+                              final actor = cast[index];
+                              return Container(
+                                width: 80, // Ajuste a largura conforme necessário
+                                padding: EdgeInsets.all(8),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    ClipRRect(
+                                      borderRadius: BorderRadius.circular(40),
+                                      child: CircleAvatar(
+                                        radius: 40,
+                                        backgroundImage: actor['profile_path'] != null
+                                            ? NetworkImage('https://image.tmdb.org/t/p/w200${actor['profile_path']}')
+                                            : AssetImage('assets/placeholder.jpg') as ImageProvider,
+                                      ),
+                                    ),
+                                    SizedBox(height: 8),
+                                    Text(
+                                      actor['name'],
+                                      style: TextStyle(fontSize: 12),
+                                      maxLines: 2,
+                                      textAlign: TextAlign.center,
+                                    ),
+                                  ],
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 ],
               ),
             );

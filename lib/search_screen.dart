@@ -21,6 +21,12 @@ class _SearchMovieState extends State<SearchMovie> {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0.0,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+        ),
       ),
       body: Padding(
         padding: EdgeInsets.all(16),
@@ -49,6 +55,10 @@ class _SearchMovieState extends State<SearchMovie> {
                 ),
                 hintText: "ex: The Godfather",
                 prefixIcon: Icon(Icons.search),
+                suffixIcon: IconButton(
+                  onPressed: _clearSearch,
+                  icon: Icon(Icons.clear),
+                ),
               ),
               onChanged: _getSuggestions,
             ),
@@ -70,7 +80,7 @@ class _SearchMovieState extends State<SearchMovie> {
                       );
                     },
                     child: ListTile(
-                      contentPadding: EdgeInsets.all(8),
+                      contentPadding: const EdgeInsets.all(8),
                       title: Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -173,6 +183,12 @@ class _SearchMovieState extends State<SearchMovie> {
     } catch (e) {
       print('Error fetching suggestions: $e');
     }
+  }
+  void _clearSearch() {
+    setState(() {
+      _searchController.clear();
+      _suggestions.clear();
+    });
   }
 }
 
