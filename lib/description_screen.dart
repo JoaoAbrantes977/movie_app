@@ -65,6 +65,13 @@ class _DescriptionScreenState extends State<DescriptionScreen> {
       } else if (responseRegister.statusCode == 400) {
         final Map<String, dynamic> errorData = jsonDecode(responseRegister.body);
         final String errorMessage = errorData['error'];
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(errorMessage),
+            backgroundColor: Colors.red,
+          ),
+        );
       } else {
         // Handle other status codes
         ScaffoldMessenger.of(context).showSnackBar(
