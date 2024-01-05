@@ -107,7 +107,7 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
   }
 
 // DELETES THE SELECTED MOVIE BY THE USER
-  Future<void> deleteFavoriteMovie(String idMovie) async {
+  Future<void> deleteFavoriteMovie(dynamic idMovie) async {
     // userId -> id do utilizador
     // idMovie -> id do filme
 
