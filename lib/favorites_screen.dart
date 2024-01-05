@@ -1,5 +1,6 @@
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
+import 'package:movie_app/description_screen.dart';
 import 'package:movie_app/search_screen.dart';
 import 'home_screen.dart';
 import 'login.dart';
@@ -218,18 +219,28 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
           final movie = moviesData[index];
           final String posterPath = movie['poster_path'];
           final String title = movie['title'];
-          final String idMovie = movie['id'].toString();
+          final idMovie = movie['id'];
 
           return Padding(
             padding: const EdgeInsets.all(8.0),
             child: Row(
               children: [
-                SizedBox(
-                  width: 100,
-                  height: 150,
-                  child: Image.network(
-                    'https://image.tmdb.org/t/p/w200$posterPath',
-                    fit: BoxFit.cover,
+                GestureDetector(
+                  onTap:(){
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => DescriptionScreen(movieId: idMovie),
+                      ),
+                    );
+                  } ,
+                  child: SizedBox(
+                    width: 100,
+                    height: 150,
+                    child: Image.network(
+                      'https://image.tmdb.org/t/p/w200$posterPath',
+                      fit: BoxFit.cover,
+                    ),
                   ),
                 ),
                 const SizedBox(width: 8),
