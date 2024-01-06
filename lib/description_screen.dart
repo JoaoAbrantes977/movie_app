@@ -1,6 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'login.dart';
+
+// Acede a classe User
+User user = User.userInstance;
+String userEmail = user.email;
+String userId = user.id;
 
 class DescriptionScreen extends StatefulWidget {
   final int movieId;
@@ -13,11 +19,52 @@ class DescriptionScreen extends StatefulWidget {
 
 class _DescriptionScreenState extends State<DescriptionScreen> {
   late Future<Map<String, dynamic>> _movieDetails;
+  late String movieIdDescription;
 
   @override
   void initState() {
     super.initState();
     _movieDetails = fetchMovieDetails(widget.movieId);
+  }
+
+  Future<void> favmovie(String movieIdDescription, String idUser) async {
+    final responseRegister = await http.post(
+      Uri.parse('http://10.0.2.2:3000/insertMovie'),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(<String, String>{
+        'idUser': idUser,
+        'idMovie': movieIdDescription,
+      }),
+    );
+
+    if (responseRegister.statusCode == 200) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Successfully added to your Favorites"),
+          backgroundColor: Colors.green,
+        ),
+      );
+    } else if (responseRegister.statusCode == 400) {
+      // Email already exists, show a SnackBar
+      final Map<String, dynamic> errorData = jsonDecode(responseRegister.body);
+      final String errorMessage = errorData['error'];
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(errorMessage),
+          backgroundColor: Colors.red,
+        ),
+      );
+    } else {
+      // Unexpected error, show a generic SnackBar
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Unexpected error occurred'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
   }
 
   Future<Map<String, dynamic>> fetchMovieDetails(int movieId) async {
@@ -39,6 +86,17 @@ class _DescriptionScreenState extends State<DescriptionScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Movie Details'),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.add),
+            onPressed: () {
+              _movieDetails.then((movieDetails) {
+                movieIdDescription = movieDetails['id'].toString();
+                favmovie(movieIdDescription, userId);
+              });
+            },
+          ),
+        ],
       ),
       body: FutureBuilder<Map<String, dynamic>>(
         future: _movieDetails,
@@ -69,7 +127,7 @@ class _DescriptionScreenState extends State<DescriptionScreen> {
                           height: 300,
                           width: double.infinity,
                           fit: BoxFit.cover,
-                          alignment: Alignment.topCenter, // Ajuste a posição da imagem aqui
+                          alignment: Alignment.topCenter,
                         ),
                       ),
                       Padding(
@@ -104,7 +162,7 @@ class _DescriptionScreenState extends State<DescriptionScreen> {
                           style: const TextStyle(fontSize: 16, color: Colors.grey),
                         ),
                         const SizedBox(height: 16),
-                        Row( // Usando Row para colocar o score e a duração lado a lado
+                        Row(
                           children: [
                             Expanded(
                               child: Text(
@@ -133,7 +191,6 @@ class _DescriptionScreenState extends State<DescriptionScreen> {
                             color: Colors.black,
                           ),
                         ),
-                        // Lista de Atores
                         SizedBox(
                           height: 120,
                           child: ListView.builder(
@@ -143,8 +200,8 @@ class _DescriptionScreenState extends State<DescriptionScreen> {
                               final actor = cast[index];
                               return Flexible(
                                 child: Container(
-                                  width: 80, // Ajuste a largura conforme necessário
-                                  margin: const EdgeInsets.only(right: 10), // Adicione um espaço entre os atores
+                                  width: 80,
+                                  margin: const EdgeInsets.only(right: 10),
                                   child: Column(
                                     crossAxisAlignment: CrossAxisAlignment.center,
                                     children: [
