@@ -21,7 +21,7 @@ class _DescriptionScreenState extends State<DescriptionScreen> {
   }
 
   Future<Map<String, dynamic>> fetchMovieDetails(int movieId) async {
-    const apiKey = "9c2f0ada85abce310958785de988c4fb"; // Substitua pela sua própria chave da API
+    const apiKey = "9c2f0ada85abce310958785de988c4fb";
     final response = await http.get(
       Uri.parse('https://api.themoviedb.org/3/movie/$movieId?api_key=$apiKey&append_to_response=credits'),
     );

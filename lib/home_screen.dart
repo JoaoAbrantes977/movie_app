@@ -235,7 +235,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                         autoPlayCurve: Curves.fastOutSlowIn,
                                         enableInfiniteScroll: true,
                                         autoPlayAnimationDuration: const Duration(milliseconds: 800),
-                                        viewportFraction: 0.8,
+                                        viewportFraction: 0.33, // Set this value to display three posters
                                       ),
                                     ),
                                   ],
