@@ -7,6 +7,8 @@ import 'login.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
+import 'main.dart';
+
 // Acede a classe User
 User user = User.userInstance;
 String userEmail = user.email;
@@ -218,6 +220,7 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
               leading: const Icon(Icons.exit_to_app),
               title: const Text('Log Out'),
               onTap: () {
+                setLoginStatus(context, false);
                 Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(builder: (context) => LoginForm()),
