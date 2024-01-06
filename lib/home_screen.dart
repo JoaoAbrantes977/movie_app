@@ -7,6 +7,8 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:movie_app/search_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'main.dart';
 
 
 class HomeScreen extends StatefulWidget {
@@ -108,6 +110,7 @@ class _HomeScreenState extends State<HomeScreen> {
               leading: const Icon(Icons.exit_to_app),
               title: const Text('Log Out'),
               onTap: () {
+                setLoginStatus(context, false);
                 Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(builder: (context) => LoginForm()),

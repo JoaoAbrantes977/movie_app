@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:movie_app/home_screen.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'main.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 
 // Class User criada para guardar o email e o id do utilizador que faz login
@@ -42,6 +44,7 @@ class LoginForm extends StatelessWidget {
   final TextEditingController passController = TextEditingController();
 
   LoginForm({super.key});
+
 
   @override
   Widget build(BuildContext context) {
@@ -214,7 +217,7 @@ Future<void> verifyUser(String email, String password, context) async {
 
       print(userIdDB + " do login.dart");
       User.setUserInstance(User(email, userIdDB));
-
+      setLoginStatus(context,true);
       // User logged in successfully, navigate to HomePage
       Navigator.pushReplacement(
         context,
@@ -249,4 +252,6 @@ Future<void> verifyUser(String email, String password, context) async {
       ),
     );
   }
+
 }
+
