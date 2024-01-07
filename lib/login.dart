@@ -75,9 +75,6 @@ class LoginForm extends StatelessWidget {
                 String email = emailController.text;
                 String password = passController.text;
                 verifyUser(email, password, context);
-                print(
-                    'Login Button Pressed\nEmail: $email\nPassword: $password');
-                print("Login efetuado com sucesso");
               },
               child: const Text('Login'),
             ),
@@ -90,9 +87,7 @@ class LoginForm extends StatelessWidget {
 
                 if (email.isNotEmpty && password.isNotEmpty) {
                   createUser(email, password, context);
-                  print(
-                      'Login Button Pressed\nEmail: $email\nPassword: $password');
-                  print("Registo efetuado com sucesso");
+
                 } else {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
@@ -215,7 +210,6 @@ Future<void> verifyUser(String email, String password, context) async {
       Map<String, dynamic> userId = responseData['user'];
       final String userIdDB = userId['id'].toString();
 
-      print(userIdDB + " do login.dart");
       User.setUserInstance(User(email, userIdDB));
       setLoginStatus(context,true);
       // User logged in successfully
