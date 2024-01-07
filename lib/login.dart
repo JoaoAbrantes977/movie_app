@@ -4,7 +4,6 @@ import 'package:movie_app/home_screen.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'main.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 
 // Class User criada para guardar o email e o id do utilizador que faz login
@@ -96,7 +95,6 @@ class LoginForm extends StatelessWidget {
                     ),
                   );
                 }
-                print('Register Button Pressed\nEmail: $email\nPassword: $password');
               },
               child: const Text('Register'),
             ),
@@ -147,7 +145,7 @@ Future<void> createUser(String email, String password, context) async {
         MaterialPageRoute(builder: (context) => LoginForm()),
       );
     } else if (responseRegister.statusCode == 400) {
-      // Email already exists, show a SnackBar
+      // Email already exists
       final Map<String, dynamic> errorData = jsonDecode(responseRegister.body);
       final String errorMessage = errorData['error'];
 
@@ -210,6 +208,7 @@ Future<void> verifyUser(String email, String password, context) async {
       Map<String, dynamic> userId = responseData['user'];
       final String userIdDB = userId['id'].toString();
 
+      // Adiciona o email vindo do controller e o id vindo da base de dados
       User.setUserInstance(User(email, userIdDB));
       setLoginStatus(context,true);
       // User logged in successfully

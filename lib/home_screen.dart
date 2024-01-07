@@ -10,6 +10,10 @@ import 'package:movie_app/search_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'main.dart';
 
+// Acede a classe User
+User user = User.userInstance;
+String userEmail = user.email;
+String userId = user.id;
 
 class HomeScreen extends StatefulWidget {
 
@@ -20,6 +24,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+
 
   @override
   void initState() {
@@ -64,21 +69,21 @@ class _HomeScreenState extends State<HomeScreen> {
         child: ListView(
           padding: EdgeInsets.zero,
           children: [
-            const DrawerHeader(
-              decoration: BoxDecoration(
+             DrawerHeader(
+              decoration: const BoxDecoration(
                 color: Colors.blue,
               ),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  CircleAvatar(
+                  const CircleAvatar(
                     radius: 40,
                     backgroundImage: AssetImage('assets/profile_pic.png'),
                   ),
-                  SizedBox(height: 10),
+                  const SizedBox(height: 10),
                   Text(
-                    'Username',
-                    style: TextStyle(
+                    userEmail,
+                    style: const TextStyle(
                       color: Colors.white,
                       fontSize: 16,
                     ),
