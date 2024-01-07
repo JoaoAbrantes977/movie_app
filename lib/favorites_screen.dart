@@ -31,7 +31,7 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
     super.initState();
     // Fetch favorite movie ids from the server
     fetchFavoriteMovies();
-    // Add a listener to check for internet connectivity changes
+    // verify internet connectivity
     Connectivity().onConnectivityChanged.listen((ConnectivityResult result) {
       if (result == ConnectivityResult.mobile || result == ConnectivityResult.wifi) {
         setState(() {
@@ -123,7 +123,7 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
     }
   }
 
-// DELETES THE SELECTED MOVIE BY THE USER
+// Apaga o filme selecionado pelo utilizador
   Future<void> deleteFavoriteMovie(dynamic idMovie) async {
     // userId -> id do utilizador
     // idMovie -> id do filme
@@ -131,7 +131,7 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
     var connectivityResult = await Connectivity().checkConnectivity();
 
     if (connectivityResult == ConnectivityResult.none) {
-      // No internet connection, show a SnackBar
+      // No internet connection
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('No internet connection'),
@@ -166,6 +166,12 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text("My Favorite Movies"),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+        ),
         backgroundColor: Colors.blue,
       ),
       drawer: Drawer(
@@ -198,14 +204,14 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
               leading: const Icon(Icons.dark_mode),
               title: const Text('Dark Mode'),
               onTap: () {
-                // Handle dark mode option
+                //  dark mode option
               },
             ),
             ListTile(
               leading: const Icon(Icons.settings),
               title: const Text('Settings'),
               onTap: () {
-                // Handle settings option
+                //  settings option
               },
             ),
             ListTile(
@@ -213,7 +219,7 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
               title: const Text('App Version'),
               subtitle: const Text("1.0.0"),
               onTap: () {
-                // Handle app version option
+                //  app version option
               },
             ),
             ListTile(

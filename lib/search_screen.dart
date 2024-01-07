@@ -33,19 +33,19 @@ class _SearchMovieState extends State<SearchMovie> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            Text(
+            const Text(
               "Search for a movie",
               style: TextStyle(
                 fontSize: 26,
                 fontWeight: FontWeight.bold,
               ),
             ),
-            SizedBox(
+            const SizedBox(
               height: 20,
             ),
             TextField(
               controller: _searchController,
-              style: TextStyle(color: Colors.white),
+              style: const TextStyle(color: Colors.white),
               decoration: InputDecoration(
                 filled: true,
                 fillColor: Colors.grey,
@@ -54,7 +54,7 @@ class _SearchMovieState extends State<SearchMovie> {
                   borderSide: BorderSide.none,
                 ),
                 hintText: "ex: The Godfather",
-                prefixIcon: Icon(Icons.search),
+                prefixIcon: const Icon(Icons.search),
                 suffixIcon: IconButton(
                   onPressed: _clearSearch,
                   icon: Icon(Icons.clear),
@@ -62,7 +62,7 @@ class _SearchMovieState extends State<SearchMovie> {
               ),
               onChanged: _getSuggestions,
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             Expanded(
               child: ListView.builder(
                 itemCount: _suggestions.length,
@@ -90,14 +90,14 @@ class _SearchMovieState extends State<SearchMovie> {
                             height: 50,
                             fit: BoxFit.cover,
                           ),
-                          SizedBox(width: 8),
+                          const SizedBox(width: 8),
                           Expanded(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
                                   suggestion.title,
-                                  style: TextStyle(
+                                  style: const TextStyle(
                                     fontSize: 16,
                                     fontWeight: FontWeight.bold,
                                   ),
@@ -106,7 +106,7 @@ class _SearchMovieState extends State<SearchMovie> {
                                 ),
                                 Text(
                                   'Rating: ${suggestion.rating}',
-                                  style: TextStyle(
+                                  style: const TextStyle(
                                     fontSize: 14,
                                   ),
                                 )
@@ -126,6 +126,7 @@ class _SearchMovieState extends State<SearchMovie> {
     );
   }
 
+  // obtem a informação dos filmes atraves da API do TMDB
   Future<void> _getSuggestions(String query) async {
 
     var connectivityResult = await Connectivity().checkConnectivity();
@@ -144,7 +145,6 @@ class _SearchMovieState extends State<SearchMovie> {
     final String apiKey = '9c2f0ada85abce310958785de988c4fb';
     final String baseUrl = 'https://api.themoviedb.org/3/search/movie';
 
-    // Evite chamadas desnecessárias para consultas vazias
     if (query.isEmpty) {
       setState(() {
         _suggestions = [];
@@ -192,6 +192,7 @@ class _SearchMovieState extends State<SearchMovie> {
   }
 }
 
+// classe movie
 class MovieSuggestion {
   final String title;
   final String posterPath;

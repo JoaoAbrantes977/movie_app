@@ -27,6 +27,7 @@ class _DescriptionScreenState extends State<DescriptionScreen> {
     _movieDetails = fetchMovieDetails(widget.movieId);
   }
 
+  // Adiciona o filme favorito ao utilizador na base de dados
   Future<void> favmovie(String movieIdDescription, String idUser) async {
     final responseRegister = await http.post(
       Uri.parse('http://10.0.2.2:3000/insertMovie'),
@@ -47,7 +48,7 @@ class _DescriptionScreenState extends State<DescriptionScreen> {
         ),
       );
     } else if (responseRegister.statusCode == 400) {
-      // Email already exists, show a SnackBar
+      // Email already exists
       final Map<String, dynamic> errorData = jsonDecode(responseRegister.body);
       final String errorMessage = errorData['error'];
       ScaffoldMessenger.of(context).showSnackBar(
@@ -57,7 +58,7 @@ class _DescriptionScreenState extends State<DescriptionScreen> {
         ),
       );
     } else {
-      // Unexpected error, show a generic SnackBar
+      // Unexpected error
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Unexpected error occurred'),
@@ -67,6 +68,7 @@ class _DescriptionScreenState extends State<DescriptionScreen> {
     }
   }
 
+  // Vai buscar os detalhes do filme à API  do TMDB
   Future<Map<String, dynamic>> fetchMovieDetails(int movieId) async {
     const apiKey = "9c2f0ada85abce310958785de988c4fb";
     final response = await http.get(

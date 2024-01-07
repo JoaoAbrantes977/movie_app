@@ -33,6 +33,7 @@ class MyApp extends StatelessWidget {
     );
   }
 
+  // Verifica se a variavél isLogged esta true or false
   Future<bool> checkLoginStatus() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     bool isLogged = prefs.getBool('isLogged') ?? false;
@@ -40,6 +41,7 @@ class MyApp extends StatelessWidget {
   }
 
 }
+// muda a variavel para false ou true
 void setLoginStatus(BuildContext context, bool isLogged) async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
   prefs.setBool('isLogged', isLogged);

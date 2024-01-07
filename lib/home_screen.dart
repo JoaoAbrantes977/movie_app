@@ -26,6 +26,7 @@ class _HomeScreenState extends State<HomeScreen> {
     // TODO: implement initState
     super.initState();
 
+    // ao reconectar à internet, reconstroi o widget
     Connectivity().onConnectivityChanged.listen((ConnectivityResult result) {
       if (result == ConnectivityResult.mobile || result == ConnectivityResult.wifi) {
         setState(() {
@@ -37,6 +38,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   final String apiKey = "9c2f0ada85abce310958785de988c4fb";
 
+  // vai buscar os filmes através da API do TMDB
   Future<List<Map<String, dynamic>>> fetchMovies(String endpoint) async {
 
     final response = await http.get(
@@ -88,14 +90,14 @@ class _HomeScreenState extends State<HomeScreen> {
               leading: const Icon(Icons.dark_mode),
               title: const Text('Dark Mode'),
               onTap: () {
-                // Handle dark mode option
+                //  dark mode option
               },
             ),
             ListTile(
               leading: const Icon(Icons.settings),
               title: const Text('Settings'),
               onTap: () {
-                // Handle settings option
+                //  settings option
               },
             ),
             ListTile(
@@ -103,7 +105,7 @@ class _HomeScreenState extends State<HomeScreen> {
               title: const Text('App Version'),
               subtitle: const Text("1.0.0"),
               onTap: () {
-                // Handle app version option
+                //  app version option
               },
             ),
             ListTile(
@@ -147,7 +149,7 @@ class _HomeScreenState extends State<HomeScreen> {
               MaterialPageRoute(builder: (context) => const HomeScreen()),
             );
           } else {
-            Navigator.pushReplacement(
+            Navigator.push(
               context,
               MaterialPageRoute(builder: (context) => const FavoriteScreen()),
             );

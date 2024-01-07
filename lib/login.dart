@@ -112,13 +112,13 @@ class LoginForm extends StatelessWidget {
   }
 }
 
-// CREATE USER //
+// CREATE USER METHOD //
 Future<void> createUser(String email, String password, context) async {
 
     var connectivityResult = await Connectivity().checkConnectivity();
 
     if (connectivityResult == ConnectivityResult.none) {
-      // No internet connection, show a SnackBar
+      // No internet connection
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('No internet connection'),
@@ -146,7 +146,7 @@ Future<void> createUser(String email, String password, context) async {
           backgroundColor: Colors.green,
         ),
       );
-      // User created successfully, navigate to HomePage
+      // User created successfully
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => LoginForm()),
@@ -163,7 +163,7 @@ Future<void> createUser(String email, String password, context) async {
         ),
       );
     } else {
-      // Unexpected error, show a generic SnackBar
+      // Unexpected error
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Unexpected error occurred'),
@@ -182,13 +182,13 @@ Future<void> createUser(String email, String password, context) async {
   }
 }
 
-// VERIFY USER //
+// VERIFY USER METHOD//
 Future<void> verifyUser(String email, String password, context) async {
 
     var connectivityResult = await Connectivity().checkConnectivity();
 
     if (connectivityResult == ConnectivityResult.none) {
-      // No internet connection, show a SnackBar
+      // No internet connection
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('No internet connection'),
@@ -218,7 +218,7 @@ Future<void> verifyUser(String email, String password, context) async {
       print(userIdDB + " do login.dart");
       User.setUserInstance(User(email, userIdDB));
       setLoginStatus(context,true);
-      // User logged in successfully, navigate to HomePage
+      // User logged in successfully
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => const HomeScreen()),
@@ -235,7 +235,7 @@ Future<void> verifyUser(String email, String password, context) async {
         ),
       );
     } else {
-      // Unexpected error, show a generic SnackBar
+      // Unexpected error
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Unexpected error occurred'),
