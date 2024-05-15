@@ -1,4 +1,3 @@
-import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:flutter/material.dart';
 import 'package:movie_app/home_screen.dart';
 import 'package:movie_app/login.dart';
@@ -27,13 +26,13 @@ class MyApp extends StatelessWidget {
             home: snapshot.data == true ? const HomeScreen() : LoginForm(),
           );
         } else {
-          return CircularProgressIndicator();
+          return const CircularProgressIndicator();
         }
       },
     );
   }
 
-  // Verifica se a variavél isLogged esta true or false
+  // Verifica se a variavél isLogged está true ou false
   Future<bool> checkLoginStatus() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     bool isLogged = prefs.getBool('isLogged') ?? false;

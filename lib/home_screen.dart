@@ -7,7 +7,6 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:movie_app/search_screen.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'main.dart';
 
 // Acede a classe User
